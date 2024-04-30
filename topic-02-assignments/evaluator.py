@@ -1,5 +1,4 @@
 def evaluate_expression(ast, environment):
-
     # simple values
     if ast['tag'] == 'number':
         assert type(ast['value']) in [float, int], f"unexpected ast numeric value {ast['value']} type is a {type(ast['value'])}."
@@ -11,11 +10,13 @@ def evaluate_expression(ast, environment):
         return environment[ast['value']], environment
     
     # unary operations
-
+    if ast['tag'] == '-':
+        value, environment = evaluate_expression(ast['right'], environment)
+        return -value, environment
 
     # binary operations
-    left_value, environment = evaluate(ast['left'], environment)
-    right_value, environment = evaluate(ast['right'], environment)
+    left_value, environment = evaluate_expression(ast['left'], environment)
+    right_value, environment = evaluate_expression(ast['right'], environment)
 
     if ast['tag'] == '+':
         return left_value + right_value, environment
@@ -28,6 +29,12 @@ def evaluate_expression(ast, environment):
         if right_value == 0:
             raise Exception("Division by zero")
         return left_value / right_value, environment
+    elif ast['tag'] == '%':
+        left_value, _ = evaluate_expression(ast['left'], environment)
+        right_value, _ = evaluate_expression(ast['right'], environment)
+        if right_value == 0:
+            raise Exception("Modulus by zero")
+        return left_value % right_value, environment
     else:
         raise Exception(f"Unknown operation: {ast['tag']}")
 

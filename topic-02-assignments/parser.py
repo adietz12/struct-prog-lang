@@ -52,18 +52,23 @@ def parse_term(tokens):
 def parse_factor(tokens):
     token = tokens[0]
     tag = token["tag"]
+
     if tag == "number":
         return create_node("number", value=token["value"]), tokens[1:]
-    if tag == "identifier":
-        return create_node("identifier", value=token["value"]), tokens[1:]
-    if tag == "(":
-        node, tokens = parse_expression(tokens[1:])
-        if tokens and tokens[0]["tag"] != ")":
+    elif tag == "(":
+        node, remaining_tokens = parse_expression(tokens[1:])
+        if remaining_tokens and remaining_tokens[0]["tag"] != ")":
             raise Exception("Expected ')'")
-        return node, tokens[1:]
+        return node, remaining_tokens[1:]
+    elif tag == "-":
+        factor_node, remaining_tokens = parse_factor(tokens[1:])
+        return create_node("-", left=None, right=factor_node), remaining_tokens
+    elif tag == "%":  # Modulus operator
+        left_node, remaining_tokens = parse_factor(tokens[1:])
+        right_node, remaining_tokens = parse_factor(remaining_tokens)
+        return create_node("%", left=left_node, right=right_node), remaining_tokens
     else:
-        raise Exception(f"Unexpected token: {tokens[0]}")
-
+        raise Exception(f"Unexpected token: {token}")
 
 def parse(tokens):
     tokens.append({"tag": None})  # Sentinel to mark the end of input

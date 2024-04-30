@@ -24,6 +24,7 @@ patterns = [
     [r"-", "-"],
     [r"\*", "*"],
     [r"/", "/"],
+    [r"%", "%"],  # Modulus operator
     [r"\(", "("],
     [r"\)", ")"],
     [r"\{", "{"],
@@ -62,13 +63,13 @@ def tokenize(characters):
         # this should never fail, since the last pattern matches everything.
         assert match
         # skip whitespace and comments
-        if tag == None:
+        if tag is None:
             position = match.end()
             continue
         # get the value of the token
         if tag == "error":
             # complain about errors and throw exception
-            raise Exception(f"Syntax error: illegal character : {[value]}")
+            raise Exception(f"Syntax error: illegal character : {characters[position]}")
         else:
             # package the token
             tokens.append({"tag": tag, "value": match.group(0), "position": position})
