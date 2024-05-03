@@ -108,6 +108,17 @@ def evaluate_expression(ast, environment):
         right_value, environment = evaluate(ast["right"], environment)
         environment[left_variable] /= right_value
         return None, environment
+    if ast["tag"] == "**":
+        left_value, environment = evaluate(ast["left"], environment)
+        right_value, environment = evaluate(ast["right"], environment)
+        return left_value ** right_value, environment
+    if ast["tag"] == "**=":
+        left_variable = ast["left"]["value"]  # Extract the left variable name
+        left_value, environment = evaluate(ast["left"], environment)
+        right_value, environment = evaluate(ast["right"], environment)
+        environment[left_variable] **= right_value
+        return None, environment
+
     if ast["tag"] == "<":
         left_value, environment = evaluate(ast["left"], environment)
         right_value, environment = evaluate(ast["right"], environment)

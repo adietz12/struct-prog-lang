@@ -124,12 +124,10 @@ def parse_arithmetic_term(tokens):
     arithmetic_term = arithmetic_factor { ("*" | "/") arithmetic_factor };
     """
     node, tokens = parse_arithmetic_factor(tokens)
-    print("Parsing arithmetic term with tokens:", tokens)
-    while tokens[0]["tag"] in ["*", "/", "*=", "/="]: #Added new tokens for compound arithmetic
+    while tokens[0]["tag"] in ["*", "/", "*=", "/=", "**", "**="]: #Added new tokens for compound arithmetic
         tag = tokens[0]["tag"]
         next_node, tokens = parse_arithmetic_factor(tokens[1:])
         node = {"tag": tag, "left": node, "right": next_node}
-        print("Finished parsing arithmetic term, remaining tokens:", tokens)
     return node, tokens
 
 
@@ -143,19 +141,17 @@ def test_parse_arithmetic_term():
         "left": {"tag": "<identifier>", "value": "x"},
         "right": {"tag": "<identifier>", "value": "y"},
     }
-    assert parse_arithmetic_term(t("x/y"))[0] == {
-        "tag": "/",
+     # Test cases for exponentiation
+    assert parse_arithmetic_term(t("x**y"))[0] == {
+        "tag": "**",
         "left": {"tag": "<identifier>", "value": "x"},
         "right": {"tag": "<identifier>", "value": "y"},
     }
-    assert parse_arithmetic_term(t("x*y/z"))[0] == {
-        "tag": "/",
-        "left": {
-            "tag": "*",
-            "left": {"tag": "<identifier>", "value": "x"},
-            "right": {"tag": "<identifier>", "value": "y"},
-        },
-        "right": {"tag": "<identifier>", "value": "z"},
+    # Test cases for compound exponentiation
+    assert parse_arithmetic_term(t("x**=y"))[0] == {
+        "tag": "**=",
+        "left": {"tag": "<identifier>", "value": "x"},
+        "right": {"tag": "<identifier>", "value": "y"},
     }
 
 

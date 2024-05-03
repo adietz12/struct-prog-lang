@@ -27,10 +27,11 @@ patterns = [
     [r"\-=", "-="],
     [r"--", "--"],
     [r"-", "-"],
+    [r"\*\*=", "**="], #added compound exponent operator
+    [r"\*\*", "**"], #added exponent operator
     [r"\*=", "*="],
     [r"\*", "*"],
     [r"/=", "/="],
-    #Adding exponent operator and compound
     [r"/", "/"],
     [r"\(", "("],
     [r"\)", ")"],
